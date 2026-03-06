@@ -1,591 +1,376 @@
-# 🧬 Gen Counselling AI for Good
+# GeneScope 🧬💙
 
-**AI-Powered Genetic Risk Assessment & Health Coaching Platform**
+A web-based AI preventive health platform that predicts an individual's genetically inherited disease risks using family history, personal health records, and lifestyle data — then acts as a dynamic health coach by recommending prevention plans, screening tests, and urgent consultation when needed.
 
-[![Status](https://img.shields.io/badge/status-active-success.svg)]()
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)]()
-[![Made for](https://img.shields.io/badge/made%20for-AI%20for%20Good-red.svg)]()
-
-> **Empowering individuals to understand their genetic health risks and take preventive action before diseases develop.**
-
-[Demo](#-live-demo) · [Features](#-key-features) · [Quick Start](#-quick-start) · [Documentation](#-documentation)
+Built for the **ChangeMaker: AI for Good** hackathon.
 
 ---
 
-## 🎯 What is This?
+## The Problem
 
-Gen Counselling AI is a **web-based preventive health platform** that predicts inherited disease risks using family history, lifestyle data, and lab values. It provides:
+Many people carry a genetic predisposition to serious conditions — Type 2 Diabetes, Coronary Artery Disease, Hereditary Cancer, Thalassemia, Sickle Cell Disease — without ever knowing until symptoms appear. Preventive healthcare, especially in India, remains reactive. Genetic testing is expensive and inaccessible. Adolescents and young adults rarely seek screening.
 
-- 🎲 **Risk predictions** for 10 major inherited diseases
-- 📊 **Risk classification** (Class I-IV) with clear explanations
-- 💡 **Personalized prevention plans** tailored to your profile
-- 🩺 **Screening recommendations** for early detection
-- ⚕️ **Consultation guidance** based on risk severity
-
-**No genetic testing required.** Just answer questions about your family, lifestyle, and health.
+This platform bridges that gap: using family history and health records as a proxy for genetic risk, making early risk awareness accessible without expensive lab tests.
 
 ---
 
-## 🚨 The Problem We're Solving
+## What It Does
 
-### Silent Genetic Risks
-
-Millions unknowingly carry genetic predispositions to diseases like:
-- Type-2 Diabetes
-- Heart Disease (CAD)
-- BRCA-related Cancers
-- Thalassemia & Sickle Cell
-- Familial Hypercholesterolemia
-
-**The Issue:**
-- 🔴 Risks stay hidden until symptoms appear
-- 🔴 Young adults rarely get preventive screening
-- 🔴 Genetic testing is expensive & inaccessible
-- 🔴 Healthcare reacts *after* disease onset
-
-**Our Solution:** Early, accessible, explainable risk awareness.
+1. **Collects user profile** — age, weight, height, known conditions, lifestyle habits
+2. **Collects family medical history** — up to 2 generations (parents, grandparents), including their conditions and vitals
+3. **Optionally parses uploaded medical documents** via AI-powered OCR (lab reports, prescriptions)
+4. **Runs multi-disease risk scoring** using rule-based AI models with full explainability
+5. **Returns risk classes I–IV** (Low → Very High) for each disease, with probability scores
+6. **Generates personalized output** per disease:
+   - Plain-language disease explanation
+   - Personalized prevention plan (diet, exercise, lifestyle)
+   - Recommended screening tests with frequency and prep instructions
+   - Urgency guidance — from "routine annual checkup" to "consult a doctor this week"
 
 ---
 
-## ✨ Key Features
+## Diseases Covered
 
-### 🎯 Intelligent Risk Assessment
-- **10 disease predictions** in one assessment
-- **Evidence-based scoring** using medical guidelines
-- **Explainable results** - know exactly why your risk is high
-- **No black box** - transparent rule-based system
-
-### 👨‍⚕️ Personalized Health Coaching
-- **Custom prevention plans** based on your lifestyle
-- **Recommended tests** with frequency and cost estimates
-- **Urgency levels** (routine/soon/urgent consultation)
-- **Action timelines** - what to do this week, month, year
-
-### 📸 Smart Lab Report Processing *(Coming Soon)*
-- **AI-powered OCR** to read medical reports
-- **Automatic extraction** of lab values
-- **Multi-format support** (images, PDFs)
-
-### 🎨 User-Friendly Interface
-- **Multi-step assessment** (profile, lifestyle, family history)
-- **Visual risk dashboard** with clear risk classes
-- **Detailed disease pages** with simple explanations
-- **Mobile-responsive** design
+| Disease | Category |
+|---|---|
+| Type 2 Diabetes | Metabolic |
+| Coronary Artery Disease | Cardiovascular |
+| Hypertension | Cardiovascular |
+| Familial Hypercholesterolemia | Cardiovascular |
+| Hereditary Breast & Ovarian Cancer (BRCA) | Oncological |
+| Thalassemia | Hematological |
+| Sickle Cell Disease | Hematological |
+| Asthma | Respiratory |
+| Hypothyroidism | Endocrine |
+| PCOS | Endocrine |
 
 ---
 
-## 🏗️ How It Works
+## Risk Classification
 
-### Our Approach: Rule-Based Expert System
+| Class | Label | Action |
+|---|---|---|
+| I | Low Risk | Routine annual checkup |
+| II | Moderate Risk | Screen within 3–6 months |
+| III | High Risk | Consult doctor within 1 month |
+| IV | Very High Risk | Urgent — consult within 1–2 weeks |
 
-We use a **transparent, explainable AI model** based on clinical guidelines:
+Each class drives personalized prevention advice, test selection, frequency adjustments, and urgency messaging throughout the platform.
+
+---
+
+## Architecture
 
 ```
-Risk Score = (Family History × 40%) + (Lifestyle × 35%) + (Lab Values × 25%)
-
-Then classify:
-• Class I (Low):       0-29% risk
-• Class II (Moderate): 30-54% risk
-• Class III (High):    55-74% risk
-• Class IV (Very High): 75-99% risk
+┌─────────────────────────────────────────────────────┐
+│                  FRONTEND (React + Vite)             │
+│  LandingPage → RegistrationForm → FamilyHistoryForm  │
+│  → LifestyleForm → UploadReport → ResultsDashboard   │
+│                                                      │
+│  React · Vite · TailwindCSS · Lucide Icons · Axios   │
+└─────────────────┬───────────────────────────────────┘
+                  │  REST API (Axios / JSON)
+                  ▼
+┌─────────────────────────────────────────────────────┐
+│                   BACKEND (FastAPI)                  │
+│                                                      │
+│  POST /api/predict    → prediction_service           │
+│  POST /api/ocr        → ocr_service                  │
+│  GET  /api/disease-info/{id}                         │
+│                                                      │
+│  FastAPI · Uvicorn · Pydantic · Python-dotenv        │
+└─────────────────┬───────────────────────────────────┘
+                  │  Python imports
+                  ▼
+┌─────────────────────────────────────────────────────┐
+│                     AI MODULE                        │
+│                                                      │
+│  ai/risk/                                            │
+│    risk_model.py       ← predict_risks() entry point │
+│    scoring_rules.py    ← per-disease scoring rules   │
+│    risk_classes.py     ← I–IV classification logic   │
+│    explainability.py   ← human-readable reasons      │
+│                                                      │
+│  ai/coaching/                                        │
+│    consult_logic.py       ← backend↔AI bridge        │
+│    prevention_engine.py   ← personalized plans       │
+│    test_recommender.py    ← screening test selection │
+│                                                      │
+│  ai/ocr/                                             │
+│    ocr_pipeline.py     ← medical document parsing    │
+│                                                      │
+│  ai/data/                                            │
+│    diseases_config.json   ← disease metadata         │
+│    guidelines.json        ← prevention guidelines    │
+│    tests_map.json         ← screening tests database │
+│    sample_inputs.json     ← test payloads            │
+└─────────────────────────────────────────────────────┘
 ```
-
-**Why rule-based?**
-- ✅ **Explainable** - can explain every prediction
-- ✅ **Trustworthy** - based on medical research
-- ✅ **No training data needed** - privacy-friendly
-- ✅ **Transparent** - not a black box
-- ✅ **Regulatory-friendly** - auditable logic
-
-### Disease Coverage
-
-| Disease | Family Weight | Key Risk Factors |
-|---------|---------------|------------------|
-| Type-2 Diabetes | 35% | High sugar, sedentary, obesity, family history |
-| Coronary Artery Disease | 30% | Smoking, high-fat diet, high cholesterol |
-| Hypertension | 28% | High salt, alcohol, stress, obesity |
-| Familial Hypercholesterolemia | 50% | Strong genetic component, high LDL |
-| BRCA (Breast/Ovarian Cancer) | 45% | Family history, hormones, lifestyle |
-| Thalassemia | 50% | Pure genetic (carrier risk) |
-| Sickle Cell Disease | 50% | Pure genetic (carrier risk) |
-| Asthma | 25% | Allergens, pollution, family history |
-| Hypothyroidism | 30% | Family history, iodine deficiency |
-| PCOS | 35% | Obesity, sedentary lifestyle |
 
 ---
 
-## 🚀 Quick Start
+## Project Structure
+
+```
+genescope/
+├── ai/
+│   ├── coaching/
+│   │   ├── consult_logic.py          # Backend↔AI bridge, predict_risk()
+│   │   ├── prevention_engine.py      # Personalized prevention plans
+│   │   └── test_recommender.py       # Screening test selection & prioritization
+│   ├── data/
+│   │   ├── diseases_config.json      # Disease metadata and descriptions
+│   │   ├── guidelines.json           # Prevention guidelines for all diseases
+│   │   ├── sample_inputs.json        # Sample request payloads for testing
+│   │   └── tests_map.json            # Screening test database per disease
+│   ├── ocr/
+│   │   └── ocr_pipeline.py           # Medical document OCR pipeline
+│   ├── risk/
+│   │   ├── explainability.py         # Human-readable risk reasons
+│   │   ├── risk_classes.py           # Risk class I–IV assignment
+│   │   ├── risk_model.py             # Main predict_risks() function
+│   │   └── scoring_rules.py          # Per-disease scoring rules
+│   └── requirements.txt
+├── backend/
+│   ├── app/
+│   │   ├── main.py                   # FastAPI app entry point
+│   │   ├── config.py                 # Settings and environment config
+│   │   ├── routers/
+│   │   │   ├── diseases.py           # GET /api/disease-info/
+│   │   │   ├── ocr.py                # POST /api/ocr
+│   │   │   └── predict.py            # POST /api/predict
+│   │   ├── schemas/
+│   │   │   ├── prediction.py         # RiskRequest, RiskResponse schemas
+│   │   │   ├── diseases.py           # Disease info schemas
+│   │   │   ├── family.py             # Family member schema
+│   │   │   ├── lab_values.py         # Lab results schema
+│   │   │   ├── lifestyle.py          # Lifestyle inputs schema
+│   │   │   └── profile.py            # Patient profile schema
+│   │   └── services/
+│   │       ├── prediction_service.py # Calls AI risk module
+│   │       ├── ocr_service.py        # Calls OCR pipeline
+│   │       └── disease_service.py    # Disease info lookup
+│   ├── .env.example
+│   └── requirements.txt
+├── frontend/
+│   ├── src/
+│   │   ├── api/
+│   │   │   ├── client.js             # Axios instance with interceptors
+│   │   │   ├── predict.js            # POST /api/predict
+│   │   │   ├── ocr.js                # POST /api/ocr
+│   │   │   └── diseases.js           # GET /api/disease-info/
+│   │   ├── components/
+│   │   │   ├── FileUpload.jsx        # Drag-and-drop medical document upload
+│   │   │   ├── Navbar.jsx
+│   │   │   ├── Footer.jsx
+│   │   │   ├── RiskCard.jsx          # Disease risk result card
+│   │   │   ├── RiskLegend.jsx        # Risk class color legend
+│   │   │   ├── ProgressStepper.jsx   # Multi-step form progress indicator
+│   │   │   ├── ErrorBanner.jsx
+│   │   │   └── LoadingSpinner.jsx
+│   │   ├── pages/
+│   │   │   ├── LandingPage.jsx
+│   │   │   ├── RegistrationForm.jsx  # Patient profile input
+│   │   │   ├── FamilyHistoryForm.jsx # Family medical history (2 generations)
+│   │   │   ├── LifestyleForm.jsx     # Lifestyle habits input
+│   │   │   ├── UploadReport.jsx      # Medical document upload (OCR)
+│   │   │   ├── Assessment.jsx
+│   │   │   ├── ResultsDashboard.jsx  # Final results with all disease risks
+│   │   │   └── DiseaseDetail.jsx     # Per-disease detail with prevention plan
+│   │   ├── hooks/
+│   │   │   └── useLocalStorage.js
+│   │   └── utils/
+│   │       ├── formatters.js
+│   │       └── validators.js
+│   ├── .env.example
+│   └── package.json
+├── docs/
+│   └── api_contract.json             # Full OpenAPI-style contract
+├── render.yaml                       # Render.com deployment config
+└── requirements.txt
+```
+
+---
+
+## Quickstart
 
 ### Prerequisites
 
-**Backend:**
-- Python 3.8+
-- pip
+- Python 3.9+
+- Node.js 18+
 
-**Frontend:**
-- Node.js 16+
-- npm or yarn
+### 1. Clone
 
-### Installation (5 minutes)
-
-#### 1. Clone Repository
 ```bash
-git clone https://github.com/Jay-Jay-Tee/gen-counselling-ai-for-good.git
-cd gen-counselling-ai-for-good
+git clone https://github.com/Jay-Jay-Tee/genescope.git
+cd genescope
 ```
 
-#### 2. Setup Backend
+### 2. Backend
+
 ```bash
 cd backend
+cp .env.example .env
 pip install -r requirements.txt
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+pip install -r ../ai/requirements.txt
+uvicorn app.main:app --reload --port 8000
 ```
 
-Backend runs on: `http://localhost:8000`  
-API Docs: `http://localhost:8000/docs`
+The API will be running at `http://localhost:8000`.
 
-#### 3. Setup Frontend (New Terminal)
+### 3. Frontend
+
 ```bash
 cd frontend
+cp .env.example .env
+# Edit .env and set: VITE_API_URL=http://localhost:8000/api
 npm install
 npm run dev
 ```
 
-Frontend runs on: `http://localhost:5173`
-
-#### 4. Test It Works
-```bash
-# Health check
-curl http://localhost:8000/health
-
-# Expected: {"status":"healthy","service":"Genetic Risk Coach API"}
-```
-
-### Using the App
-
-1. **Open browser:** `http://localhost:5173`
-2. **Fill assessment:**
-   - Personal info (age, gender, height, weight)
-   - Lifestyle (diet, exercise, smoking, stress)
-   - Family history (parents, siblings with diseases)
-   - Lab values (HbA1c, cholesterol, etc.)
-3. **Get results:** See risk predictions for 10 diseases
-4. **Explore details:** Click any disease for prevention plans
+The app will be running at `http://localhost:5173`.
 
 ---
 
-## 📁 Project Structure
+## API Reference
 
-```
-gen-counselling-ai-for-good/
-│
-├── frontend/                   # React + Vite + Tailwind
-│   ├── src/
-│   │   ├── api/               # API integration layer
-│   │   │   ├── client.js      # Axios configuration
-│   │   │   ├── predict.js     # Risk prediction endpoint
-│   │   │   ├── ocr.js         # OCR endpoint
-│   │   │   └── diseases.js    # Disease info endpoint
-│   │   ├── pages/             # Main screens
-│   │   │   ├── LandingPage.jsx
-│   │   │   ├── RegistrationForm.jsx
-│   │   │   ├── LifestyleForm.jsx
-│   │   │   ├── FamilyHistoryForm.jsx
-│   │   │   ├── UploadReport.jsx
-│   │   │   ├── ResultsDashboard.jsx
-│   │   │   └── DiseaseDetail.jsx
-│   │   ├── App.jsx            # Routing
-│   │   └── main.jsx           # Entry point
-│   ├── package.json
-│   └── vite.config.js
-│
-├── backend/                    # FastAPI backend
-│   ├── app/
-│   │   ├── main.py            # FastAPI app & CORS
-│   │   ├── config.py          # Environment config
-│   │   ├── routers/           # API endpoints
-│   │   │   ├── predict.py     # /predict-risk
-│   │   │   ├── ocr.py         # /ocr
-│   │   │   └── diseases.py    # /disease-info
-│   │   ├── schemas/           # Pydantic models
-│   │   │   ├── prediction.py
-│   │   │   ├── profile.py
-│   │   │   ├── lifestyle.py
-│   │   │   ├── family.py
-│   │   │   └── lab_values.py
-│   │   └── services/          # Business logic
-│   │       ├── prediction_service.py
-│   │       ├── ocr_service.py
-│   │       └── disease_service.py
-│   └── requirements.txt
-│
-├── ai/                         # AI Module (Rule-based Engine)
-│   ├── risk/                  # Risk prediction
-│   │   ├── risk_model.py      # Main prediction function
-│   │   ├── scoring_rules.py   # Scoring logic
-│   │   ├── risk_classes.py    # Classification (I-IV)
-│   │   └── explainability.py  # Reason generation
-│   ├── coaching/              # Health coaching
-│   │   ├── prevention_engine.py
-│   │   ├── test_recommender.py
-│   │   └── consult_logic.py
-│   ├── ocr/                   # OCR pipeline (in progress)
-│   │   └── ocr_pipeline.py
-│   ├── data/                  # Configuration
-│   │   ├── diseases_config.json
-│   │   ├── guidelines.json
-│   │   ├── tests_map.json
-│   │   └── sample_inputs.json
-│   └── requirements.txt
-│
-├── docs/                       # Documentation
-│   └── api_contract.json
-│
-└── requirements.txt           # Root dependencies
-```
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/api/predict` | Submit patient + family + lifestyle data, receive disease risk results |
+| `POST` | `/api/ocr` | Upload medical document (PDF/image), extract structured health data |
+| `GET` | `/api/disease-info/` | List all supported diseases |
+| `GET` | `/api/disease-info/{id}` | Detailed info for a specific disease |
 
----
+Full API contract: [`docs/api_contract.json`](docs/api_contract.json)
 
-## 🔬 Technology Stack
+### Sample prediction request
 
-### Frontend
-- **React 18** - UI framework
-- **Vite** - Build tool
-- **Tailwind CSS** - Styling
-- **React Router** - Navigation
-- **Axios** - HTTP client
-- **Recharts** - Data visualization
-- **Lucide React** - Icons
-
-### Backend
-- **FastAPI** - Modern Python web framework
-- **Pydantic** - Data validation
-- **Uvicorn** - ASGI server
-- **Python 3.8+** - Language
-
-### AI Module
-- **Pure Python** - No ML frameworks needed
-- **Rule-based system** - Transparent logic
-- **EasyOCR** - Optical character recognition
-- **OpenCV** - Image processing
-- **NumPy** - Numerical operations
-
----
-
-## 📖 API Documentation
-
-### Endpoints
-
-#### 1. Health Check
-```bash
-GET /health
-```
-**Response:**
-```json
-{
-  "status": "healthy",
-  "service": "Genetic Risk Coach API",
-  "version": "1.0.0"
-}
-```
-
-#### 2. Predict Risk
-```bash
-POST /api/predict-risk/
-```
-
-**Request:**
 ```json
 {
   "patient": {
-    "age": 32,
-    "gender": "female",
-    "height": 165,
-    "weight": 75,
-    "race": "asian",
-    "known_issues": []
+    "age": 22,
+    "gender": "M",
+    "weight": 56.7,
+    "height": 171,
+    "known_issues": ["hypertension"]
   },
   "lifestyle": {
-    "smoking": false,
-    "alcohol": "occasional",
-    "exercise": "sedentary",
     "diet": "high_sugar",
-    "sleep_hours": 6,
-    "stress_level": "high"
+    "exercise": "sedentary",
+    "smoking": false,
+    "stress_level": "high",
+    "sleep_hours": 5
   },
   "family": [
     {
       "role": "mother",
       "generation": 1,
-      "age": 58,
-      "gender": "female",
-      "known_issues": ["type2_diabetes"]
-    }
-  ],
-  "lab_values": {
-    "hba1c": 6.2,
-    "fasting_glucose": 115,
-    "ldl": 145,
-    "hdl": 42
-  }
-}
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "results": [
+      "known_issues": ["diabetes", "hypertension", "heart-disease"]
+    },
     {
-      "disease_name": "Type-2 Diabetes",
-      "disease_id": "type2_diabetes",
-      "probability": 0.71,
-      "risk_class": "III",
-      "reasons": [
-        "Mother has this condition",
-        "HbA1c elevated at 6.2%, suggesting higher diabetes risk",
-        "High sugar intake and poor dietary habits",
-        "Sedentary lifestyle with minimal physical activity"
-      ],
-      "prevention": [
-        "Eliminate sugary drinks and desserts immediately",
-        "Reduce sugar and refined carbohydrates",
-        "30 minutes moderate activity daily",
-        "Control portion sizes"
-      ],
-      "recommended_tests": [
-        "HbA1c (Glycated Hemoglobin)",
-        "Fasting Blood Glucose",
-        "Oral Glucose Tolerance Test (OGTT)"
-      ],
-      "consult": "soon",
-      "consult_detail": {
-        "level": "soon",
-        "timeframe": "Schedule within 4-6 weeks",
-        "specialist": {
-          "recommended": "Endocrinologist or Diabetologist"
-        }
-      }
+      "role": "father",
+      "generation": 1,
+      "known_issues": ["diabetes", "cancer"]
     }
-    // ... 9 more diseases
   ]
 }
 ```
 
-#### 3. OCR Upload *(In Progress)*
-```bash
-POST /api/ocr/
-```
-Upload medical report image/PDF for automatic lab value extraction.
+### Sample prediction response (per disease)
 
-#### 4. Disease Info
-```bash
-GET /api/disease-info/{disease_id}
-```
-Get detailed information about a specific disease.
-
-**Interactive API Docs:** `http://localhost:8000/docs`
-
----
-
-## 🧪 Testing
-
-### Run Backend Tests
-```bash
-cd backend
-pytest
-```
-
-### Run AI Module Tests
-```bash
-cd ai
-python3 -c "
-from risk.risk_model import predict_risks
-import json
-
-with open('data/sample_inputs.json', 'r') as f:
-    data = json.load(f)
-
-result = predict_risks(data['demo_cases']['case_b_high_diabetes_risk'])
-print(f'Top Risk: {result[0][\"disease_name\"]} - {result[0][\"probability\"]}')
-"
-```
-
-### Test API Endpoint
-```bash
-curl -X POST http://localhost:8000/api/predict-risk/ \
-  -H "Content-Type: application/json" \
-  -d @ai/data/sample_inputs.json
+```json
+{
+  "disease_name": "Type 2 Diabetes",
+  "disease_id": "type2_diabetes",
+  "probability": 0.74,
+  "risk_class": "III",
+  "reasons": [
+    "Mother has Type 2 Diabetes — first-degree family history significantly increases risk",
+    "Father has Type 2 Diabetes — bilateral parental history compounds risk",
+    "High-sugar diet identified as a modifiable risk factor",
+    "Sedentary lifestyle increases insulin resistance risk"
+  ],
+  "prevention": { "diet": [...], "exercise": [...], "lifestyle": [...] },
+  "recommended_tests": ["HbA1c", "Fasting Blood Glucose", "..."],
+  "consult": "Consult doctor within 1 month"
+}
 ```
 
 ---
 
-## 🎯 Demo Scenarios
+## AI Module Design
 
-### Scenario 1: High Diabetes Risk (Sarah, 32)
-- **Profile:** Female, 32, BMI 30.1 (obese)
-- **Lifestyle:** Sedentary, high sugar diet, poor sleep
-- **Family:** Mother and sister have diabetes
-- **Labs:** HbA1c 6.2%, glucose 115 mg/dL
-- **Result:** **Class III (High Risk)** - 71% probability
+The risk engine is fully rule-based and explainable — no black-box ML. This was a deliberate design decision: in a health context, every factor that contributes to a risk score is surfaced to the user as a plain-language reason.
 
-### Scenario 2: Low Risk (John, 25)
-- **Profile:** Male, 25, BMI 22 (normal)
-- **Lifestyle:** Active, balanced diet, no smoking
-- **Family:** No known diseases
-- **Labs:** All normal
-- **Result:** **Class I (Low Risk)** for all diseases
+**Scoring pipeline:**
 
-### Scenario 3: BRCA High Risk (Emma, 38)
-- **Profile:** Female, 38
-- **Family:** Mother had breast cancer at 42, grandmother ovarian cancer
-- **Result:** **Class IV (Very High)** - urgent genetic counseling recommended
+1. `risk_model.py` — `predict_risks(user_data)` iterates over all covered diseases
+2. `scoring_rules.py` — per-disease rules weight family history, lifestyle, vitals, and lab values into a 0–1 probability
+3. `risk_classes.py` — probability mapped to class I / II / III / IV
+4. `explainability.py` — generates human-readable reason strings per contributing factor
+5. `prevention_engine.py` — personalized plan based on disease + class + user profile
+6. `test_recommender.py` — selects and prioritizes screening tests; adjusts frequency by risk class
 
----
+**Test recommendations by risk class:**
 
-## 🔐 Privacy & Ethics
+| Class | Max tests shown |
+|---|---|
+| I | 2 |
+| II | 3 |
+| III | 5 |
+| IV | 6 |
 
-### Data Handling
-- ✅ **No data storage** - All processing in-memory
-- ✅ **No user accounts** required (MVP)
-- ✅ **No PHI retention** - Data never logged
-- ✅ **Client-side option** - Can run locally
-
-### Medical Disclaimer
-⚠️ **This platform is for educational and preventive awareness only.**
-- Not a diagnostic tool
-- Not a replacement for professional medical advice
-- Always consult healthcare providers for medical decisions
-- High-risk results require professional evaluation
-
-### Ethical Considerations
-- ✅ **Transparent** - Explainable predictions
-- ✅ **Non-diagnostic** language used
-- ✅ **Empowering** - Focus on prevention
-- ✅ **Accessible** - Free to use
-- ✅ **Privacy-first** - No genetic data collected
+Test frequency is automatically tightened as risk class increases (e.g. "Annually" → "Every 6 months" for Class III, "Every 3–6 months" for Class IV).
 
 ---
 
-## 🎓 Scientific Basis
+## Deployment
 
-### Our Risk Model Uses:
+Deployed on **Render** using `render.yaml`.
 
-**Family History Weighting:**
-- Based on Mendelian inheritance patterns
-- Generation proximity (parents > grandparents)
-- Disease-specific heritability (BRCA: 50%, CAD: 30%)
+- **Backend**: Python web service running `uvicorn app.main:app`
+- **Frontend**: Static site — Vite builds to `dist/`, served as a static deploy
 
-**Lifestyle Factors:**
-- Evidence from epidemiological studies
-- Framingham Heart Study guidelines
-- ADA diabetes prevention research
+Environment variables on Render:
 
-**Lab Value Thresholds:**
-- **HbA1c ≥6.5%:** ADA diabetic threshold
-- **LDL ≥190 mg/dL:** ACC/AHA very high risk
-- **BP ≥140/90:** JNC-8 hypertension Stage 2
-
-**References:**
-- American Diabetes Association (ADA) Standards of Care
-- American College of Cardiology (ACC/AHA) Guidelines
-- National Comprehensive Cancer Network (NCCN) Guidelines
-- Published peer-reviewed research on genetic risk
+| Variable | Where | Description |
+|---|---|---|
+| `VITE_API_URL` | Frontend build env | Backend API base URL |
+| Backend secrets | Backend service env | See `backend/.env.example` |
 
 ---
 
-## 🗺️ Roadmap
+## SDG Alignment
 
-### ✅ Completed (MVP)
-- [x] Rule-based risk prediction for 10 diseases
-- [x] Web-based assessment interface
-- [x] Explainable results with reasons
-- [x] Personalized prevention plans
-- [x] Test recommendations
-- [x] Consultation urgency levels
-- [x] REST API with documentation
+**SDG 3: Good Health and Well-Being**
 
-### 🔄 In Progress
-- [ ] OCR for medical reports
-- [ ] Enhanced UI/UX
-- [ ] Error handling & validation
-
-### 🔮 Future Enhancements
-- [ ] User accounts & history tracking
-- [ ] Downloadable PDF reports
-- [ ] Multi-language support
-- [ ] Mobile app (iOS/Android)
-- [ ] Integration with wearables
-- [ ] Machine learning enhancements
-- [ ] Genetic test integration
-- [ ] Telemedicine partnerships
+GeneScope directly addresses the gap between knowing a disease runs in your family and understanding what to do about it. By making risk awareness accessible, actionable, and free, it supports early detection and preventive intervention — reducing long-term healthcare burden and avoidable complications.
 
 ---
 
-## 🤝 Contributing
+## Disclaimer
 
-We welcome contributions! Here's how:
-
-1. **Fork the repository**
-2. **Create a feature branch** (`git checkout -b feature/AmazingFeature`)
-3. **Commit changes** (`git commit -m 'Add AmazingFeature'`)
-4. **Push to branch** (`git push origin feature/AmazingFeature`)
-5. **Open a Pull Request**
-
-### Areas to Contribute
-- 🎨 UI/UX improvements
-- 🧪 Testing & validation
-- 📚 Documentation
-- 🔬 Additional disease models
-- 🌍 Internationalization
-- ♿ Accessibility features
+⚠️ GeneScope is a **preventive decision-support tool**, not a licensed medical diagnostic system. All high-risk outputs explicitly recommend professional medical consultation. Results should not replace clinical diagnosis, testing, or treatment by a qualified healthcare provider.
 
 ---
 
-## 📜 License
+## Team
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+Built at **NIT Calicut, 2026**:
 
----
-
-## 👥 Team
-
-**AI for Good Hackathon 2026**
-
-- **AI Team (2):** Risk prediction engine & OCR
-- **Backend Team (3):** FastAPI development
-- **Frontend Team (3):** React UI/UX
-- **Integration Lead (1):** API coordination
-
----
-
-## 🙏 Acknowledgments
-
-- Medical guidelines from ADA, ACC/AHA, NCCN
-- Open-source community
-- Families sharing health journeys
-- Healthcare professionals providing guidance
+- Joshua Jacob Thomas (Lead)
+- HR Soorya Dev
+- Dinesh Paliwal
+- Mayank Singh
+- Aditya Singh
+- Nirmal Kumar Prajapath
+- Satrajit Mondal
+- Sai Pranav Parasuraman
+- Sagnik Dutta
+- Siddharth Madhavan
 
 ---
 
-## 📞 Support & Contact
+## License
 
-**Issues?** [Open an issue](https://github.com/Jay-Jay-Tee/gen-counselling-ai-for-good/issues)
-
-**Questions?** Check our [Documentation](#-api-documentation) or [Quick Start](#-quick-start)
-
----
-
-## 🌟 Star Us!
-
-If you find this project useful, please ⭐ star the repository to show support!
-
----
-
-<div align="center">
-
-**Built with ❤️ for preventive healthcare**
-
-[⬆ Back to top](#-gen-counselling-ai-for-good)
-
-</div>
+MIT License — see [LICENSE](LICENSE)
