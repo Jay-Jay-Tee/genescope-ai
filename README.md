@@ -1,5 +1,9 @@
 # GeneScope 🧬💙
 
+## 🚀 Live Demo
+
+[Click here to try GeneScope](https://gen-counselling-ai-for-good-1.onrender.com/)
+
 A web-based AI preventive health platform that predicts an individual's genetically inherited disease risks using family history, personal health records, and lifestyle data — then acts as a dynamic health coach by recommending prevention plans, screening tests, and urgent consultation when needed.
 
 ---
